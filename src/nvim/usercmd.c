@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "auto/config.h"
 #include "nvim/api/private/helpers.h"
 #include "nvim/ascii_defs.h"
 #include "nvim/buffer_defs.h"
@@ -36,12 +35,12 @@
 #include "nvim/vim_defs.h"
 #include "nvim/window.h"
 
+#include "auto/config.h"
 #include "usercmd.c.generated.h"
 
 garray_T ucmds = { 0, 0, sizeof(ucmd_T), 4, NULL };
 
-static const char e_argument_required_for_str[]
-  = N_("E179: Argument required for %s");
+static const char e_argument_required_for_str[] = N_("E179: Argument required for %s");
 static const char e_no_such_user_defined_command_str[]
   = N_("E184: No such user-defined command: %s");
 static const char e_complete_used_without_allowing_arguments[]
@@ -107,17 +106,15 @@ static struct {
   cmd_addr_T expand;
   char *name;
   char *shortname;
-} addr_type_complete[] = {
-  { ADDR_ARGUMENTS, "arguments", "arg" },
-  { ADDR_LINES, "lines", "line" },
-  { ADDR_LOADED_BUFFERS, "loaded_buffers", "load" },
-  { ADDR_TABS, "tabs", "tab" },
-  { ADDR_BUFFERS, "buffers", "buf" },
-  { ADDR_WINDOWS, "windows", "win" },
-  { ADDR_QUICKFIX, "quickfix", "qf" },
-  { ADDR_OTHER, "other", "?" },
-  { ADDR_NONE, NULL, NULL }
-};
+} addr_type_complete[] = { { ADDR_ARGUMENTS, "arguments", "arg" },
+                           { ADDR_LINES, "lines", "line" },
+                           { ADDR_LOADED_BUFFERS, "loaded_buffers", "load" },
+                           { ADDR_TABS, "tabs", "tab" },
+                           { ADDR_BUFFERS, "buffers", "buf" },
+                           { ADDR_WINDOWS, "windows", "win" },
+                           { ADDR_QUICKFIX, "quickfix", "qf" },
+                           { ADDR_OTHER, "other", "?" },
+                           { ADDR_NONE, NULL, NULL } };
 
 /// Search for a user command that matches "eap->cmd".
 /// Return cmdidx in "eap->cmdidx", flags in "eap->argt", idx in "eap->useridx".
@@ -134,8 +131,8 @@ char *find_ucmd(exarg_T *eap, char *p, int *full, expand_T *xp, int *complp)
   int matchlen = 0;
   bool found = false;
   bool possible = false;
-  bool amb_local = false;            // Found ambiguous buffer-local command,
-                                     // only full match global is accepted.
+  bool amb_local = false;  // Found ambiguous buffer-local command,
+                           // only full match global is accepted.
 
   // Look for buffer-local user commands first, then global ones.
   garray_T *gap = &prevwin_curwin()->w_buffer->b_ucmds;
@@ -297,8 +294,7 @@ const char *set_context_in_user_cmdarg(const char *cmd FUNC_ATTR_UNUSED, const c
     return arg;
   }
   if (context == EXPAND_MAPPINGS) {
-    return set_context_in_map_cmd(xp, "map", (char *)arg, forceit, false, false,
-                                  CMD_map);
+    return set_context_in_map_cmd(xp, "map", (char *)arg, forceit, false, false, CMD_map);
   }
   // Find start of last argument.
   const char *p = arg;
@@ -323,8 +319,8 @@ char *expand_user_command_name(int idx)
 }
 
 /// Function given to ExpandGeneric() to obtain the list of user command names.
-char *get_user_commands(expand_T *xp FUNC_ATTR_UNUSED, int idx)
-  FUNC_ATTR_PURE FUNC_ATTR_WARN_UNUSED_RESULT
+char *get_user_commands(expand_T *xp FUNC_ATTR_UNUSED,
+                        int idx) FUNC_ATTR_PURE FUNC_ATTR_WARN_UNUSED_RESULT
 {
   // In cmdwin, the alternative buffer should be used.
   const buf_T *const buf = prevwin_curwin()->w_buffer;
@@ -378,10 +374,8 @@ char *get_user_cmd_addr_type(expand_T *xp, int idx)
 /// attributes.
 char *get_user_cmd_flags(expand_T *xp, int idx)
 {
-  static char *user_cmd_flags[] = { "addr",   "bang",     "bar",
-                                    "buffer", "complete", "count",
-                                    "nargs",  "range",    "register",
-                                    "keepscript" };
+  static char *user_cmd_flags[] = { "addr",  "bang",  "bar",   "buffer",   "complete",
+                                    "count", "nargs", "range", "register", "keepscript" };
 
   if (idx >= (int)ARRAY_SIZE(user_cmd_flags)) {
     return NULL;
@@ -478,8 +472,7 @@ static void uc_list(char *name, size_t name_len)
 
       // Skip commands which don't match the requested prefix and
       // commands filtered out.
-      if (strncmp(name, cmd->uc_name, name_len) != 0
-          || message_filtered(cmd->uc_name)) {
+      if (strncmp(name, cmd->uc_name, name_len) != 0 || message_filtered(cmd->uc_name)) {
         continue;
       }
 
@@ -618,8 +611,7 @@ static void uc_list(char *name, size_t name_len)
         }
       }
 
-      msg_outtrans_special(cmd->uc_rep, false,
-                           name_len == 0 ? Columns - 47 : 0);
+      msg_outtrans_special(cmd->uc_rep, false, name_len == 0 ? Columns - 47 : 0);
       if (p_verbose > 0) {
         last_set_msg(cmd->uc_script_ctx);
       }
@@ -640,8 +632,7 @@ static void uc_list(char *name, size_t name_len)
 }
 
 /// Parse address type argument
-int parse_addr_type_arg(char *value, int vallen, cmd_addr_T *addr_type_arg)
-  FUNC_ATTR_NONNULL_ALL
+int parse_addr_type_arg(char *value, int vallen, cmd_addr_T *addr_type_arg) FUNC_ATTR_NONNULL_ALL
 {
   int i;
 
@@ -657,7 +648,8 @@ int parse_addr_type_arg(char *value, int vallen, cmd_addr_T *addr_type_arg)
   if (addr_type_complete[i].expand == ADDR_NONE) {
     char *err = value;
 
-    for (i = 0; err[i] != NUL && !ascii_iswhite(err[i]); i++) {}
+    for (i = 0; err[i] != NUL && !ascii_iswhite(err[i]); i++) {
+    }
     err[i] = NUL;
     semsg(_("E180: Invalid address type value: %s"), err);
     return FAIL;
@@ -672,8 +664,8 @@ int parse_addr_type_arg(char *value, int vallen, cmd_addr_T *addr_type_arg)
 /// copied to allocated memory and stored in "*compl_arg".
 ///
 /// @return  FAIL if something is wrong.
-int parse_compl_arg(const char *value, int vallen, int *complp, uint32_t *argt, char **compl_arg)
-  FUNC_ATTR_NONNULL_ALL
+int parse_compl_arg(const char *value, int vallen, int *complp, uint32_t *argt,
+                    char **compl_arg) FUNC_ATTR_NONNULL_ALL
 {
   const char *arg = NULL;
   size_t arglen = 0;
@@ -699,8 +691,7 @@ int parse_compl_arg(const char *value, int vallen, int *complp, uint32_t *argt, 
       *complp = i;
       if (i == EXPAND_BUFFERS) {
         *argt |= EX_BUFNAME;
-      } else if (i == EXPAND_DIRECTORIES || i == EXPAND_FILES
-                 || i == EXPAND_SHELLCMDLINE) {
+      } else if (i == EXPAND_DIRECTORIES || i == EXPAND_FILES || i == EXPAND_SHELLCMDLINE) {
         *argt |= EX_XFILE;
       }
       break;
@@ -712,14 +703,12 @@ int parse_compl_arg(const char *value, int vallen, int *complp, uint32_t *argt, 
     return FAIL;
   }
 
-  if (*complp != EXPAND_USER_DEFINED && *complp != EXPAND_USER_LIST
-      && arg != NULL) {
+  if (*complp != EXPAND_USER_DEFINED && *complp != EXPAND_USER_LIST && arg != NULL) {
     emsg(_("E468: Completion argument only allowed for custom completion"));
     return FAIL;
   }
 
-  if ((*complp == EXPAND_USER_DEFINED || *complp == EXPAND_USER_LIST)
-      && arg == NULL) {
+  if ((*complp == EXPAND_USER_DEFINED || *complp == EXPAND_USER_LIST) && arg == NULL) {
     emsg(_("E467: Custom completion requires a function argument"));
     return FAIL;
   }
@@ -731,8 +720,7 @@ int parse_compl_arg(const char *value, int vallen, int *complp, uint32_t *argt, 
 }
 
 static int uc_scan_attr(char *attr, size_t len, uint32_t *argt, int *def, int *flags, int *complp,
-                        char **compl_arg, cmd_addr_T *addr_type_arg)
-  FUNC_ATTR_NONNULL_ALL
+                        char **compl_arg, cmd_addr_T *addr_type_arg) FUNC_ATTR_NONNULL_ALL
 {
   if (len == 0) {
     emsg(_("E175: No attribute specified"));
@@ -781,7 +769,7 @@ static int uc_scan_attr(char *attr, size_t len, uint32_t *argt, int *def, int *f
           goto wrong_nargs;
         }
       } else {
-wrong_nargs:
+      wrong_nargs:
         emsg(_("E176: Invalid number of arguments"));
         return FAIL;
       }
@@ -792,7 +780,7 @@ wrong_nargs:
       } else if (val != NULL) {
         char *p = val;
         if (*def >= 0) {
-two_count:
+        two_count:
           emsg(_("E177: Count cannot be specified twice"));
           return FAIL;
         }
@@ -801,7 +789,7 @@ two_count:
         *argt |= EX_ZEROR;
 
         if (p != val + vallen || vallen == 0) {
-invalid_count:
+        invalid_count:
           emsg(_("E178: Invalid default value for count"));
           return FAIL;
         }
@@ -837,8 +825,7 @@ invalid_count:
         return FAIL;
       }
 
-      if (parse_compl_arg(val, (int)vallen, complp, argt, compl_arg)
-          == FAIL) {
+      if (parse_compl_arg(val, (int)vallen, complp, argt, compl_arg) == FAIL) {
         return FAIL;
       }
     } else if (STRNICMP(attr, "addr", attrlen) == 0) {
@@ -935,8 +922,7 @@ int uc_add_command(char *name, size_t name_len, const char *rep, uint32_t argt, 
       if (!force
           && (cmd->uc_script_ctx.sc_sid != current_sctx.sc_sid
               || cmd->uc_script_ctx.sc_seq == current_sctx.sc_seq)) {
-        semsg(_("E174: Command already exists: add ! to replace it: %s"),
-              name);
+        semsg(_("E174: Command already exists: add ! to replace it: %s"), name);
         goto fail;
       }
 
@@ -1011,7 +997,8 @@ void ex_command(exarg_T *eap)
     p++;
     end = skiptowhite(p);
     if (uc_scan_attr(p, (size_t)(end - p), &argt, &def, &flags, &context, &compl_arg,
-                     &addr_type_arg) == FAIL) {
+                     &addr_type_arg)
+        == FAIL) {
       goto theend;
     }
     p = skipwhite(end);
@@ -1103,9 +1090,8 @@ void ex_delcommand(exarg_T *eap)
   }
 
   if (res != 0) {
-    semsg(_(buffer_only
-            ? e_no_such_user_defined_command_in_current_buffer_str
-            : e_no_such_user_defined_command_str),
+    semsg(_(buffer_only ? e_no_such_user_defined_command_in_current_buffer_str
+                        : e_no_such_user_defined_command_str),
           arg);
     return;
   }
@@ -1181,7 +1167,7 @@ static char *uc_split_args(const char *arg, char **args, const size_t *arglens, 
                            size_t *lenp)
 {
   // Precalculate length
-  int len = 2;   // Initial and final quotes
+  int len = 2;  // Initial and final quotes
   if (args == NULL) {
     const char *p = arg;
 
@@ -1402,8 +1388,7 @@ size_t uc_mods(char *buf, const cmdmod_T *cmod, bool quote)
 
   // :silent
   if (cmod->cmod_flags & CMOD_SILENT) {
-    result += add_cmd_modifier(buf,
-                               (cmod->cmod_flags & CMOD_ERRSILENT) ? "silent!" : "silent",
+    result += add_cmd_modifier(buf, (cmod->cmod_flags & CMOD_ERRSILENT) ? "silent!" : "silent",
                                &multi_mods);
   }
   // :verbose
@@ -1456,7 +1441,8 @@ static size_t uc_check_code(char *code, size_t len, char *buf, ucmd_T *cmd, exar
     ct_REGISTER,
     ct_LT,
     ct_NONE,
-  } type = ct_NONE;
+  } type
+    = ct_NONE;
 
   if ((vim_strchr("qQfF", (uint8_t)(*p)) != NULL) && p[1] == '-') {
     quote = (*p == 'q' || *p == 'Q') ? 1 : 2;
@@ -1509,13 +1495,13 @@ static size_t uc_check_code(char *code, size_t len, char *buf, ucmd_T *cmd, exar
     }
 
     switch (quote) {
-    case 0:     // No quoting, no splitting
+    case 0:  // No quoting, no splitting
       result = strlen(eap->arg);
       if (buf != NULL) {
         STRCPY(buf, eap->arg);
       }
       break;
-    case 1:     // Quote, but don't split
+    case 1:  // Quote, but don't split
       result = strlen(eap->arg) + 2;
       for (p = eap->arg; *p; p++) {
         if (*p == '\\' || *p == '"') {
@@ -1535,7 +1521,7 @@ static size_t uc_check_code(char *code, size_t len, char *buf, ucmd_T *cmd, exar
       }
 
       break;
-    case 2:     // Quote and split (<f-args>)
+    case 2:  // Quote and split (<f-args>)
       // This is hard, so only do it once, and cache the result
       if (*split_buf == NULL) {
         *split_buf = uc_split_args(eap->arg, eap->args, eap->arglens, eap->argc, split_len);
@@ -1574,12 +1560,11 @@ static size_t uc_check_code(char *code, size_t len, char *buf, ucmd_T *cmd, exar
   case ct_COUNT: {
     char num_buf[20];
     int64_t num = type == ct_LINE1
-                  ? eap->line1
-                  : (type == ct_LINE2
-                     ? eap->line2
-                     : (type == ct_RANGE
-                        ? eap->addr_count
-                        : (eap->addr_count > 0 ? eap->line2 : cmd->uc_def)));
+                    ? eap->line1
+                    : (type == ct_LINE2
+                         ? eap->line2
+                         : (type == ct_RANGE ? eap->addr_count
+                                             : (eap->addr_count > 0 ? eap->line2 : cmd->uc_def)));
     size_t num_len;
 
     snprintf(num_buf, sizeof(num_buf), "%" PRId64, num);
@@ -1674,8 +1659,8 @@ int do_ucmd(exarg_T *eap, bool preview)
   // Second round: copy result into "buf".
   char *buf = NULL;
   while (true) {
-    char *p = cmd->uc_rep;        // source
-    char *q = buf;                // destination
+    char *p = cmd->uc_rep;  // source
+    char *q = buf;          // destination
     size_t totlen = 0;
 
     while (true) {
@@ -1685,9 +1670,9 @@ int do_ucmd(exarg_T *eap, bool preview)
       }
       if (buf != NULL) {
         char *ksp;
-        for (ksp = p; *ksp != NUL && (uint8_t)(*ksp) != K_SPECIAL; ksp++) {}
-        if ((uint8_t)(*ksp) == K_SPECIAL
-            && (start == NULL || ksp < start || end == NULL)
+        for (ksp = p; *ksp != NUL && (uint8_t)(*ksp) != K_SPECIAL; ksp++) {
+        }
+        if ((uint8_t)(*ksp) == K_SPECIAL && (start == NULL || ksp < start || end == NULL)
             && ((uint8_t)ksp[1] == KS_SPECIAL && ksp[2] == KE_FILLER)) {
           // K_SPECIAL has been put in the buffer as K_SPECIAL
           // KS_SPECIAL KE_FILLER, like for mappings, but
@@ -1734,12 +1719,12 @@ int do_ucmd(exarg_T *eap, bool preview)
         q += len;
       }
     }
-    if (buf != NULL) {              // second time here, finished
+    if (buf != NULL) {  // second time here, finished
       STRCPY(q, p);
       break;
     }
 
-    totlen += strlen(p);            // Add on the trailing characters
+    totlen += strlen(p);  // Add on the trailing characters
     buf = xmalloc(totlen + 1);
   }
 
@@ -1750,8 +1735,7 @@ int do_ucmd(exarg_T *eap, bool preview)
     save_current_sctx = current_sctx;
     current_sctx.sc_sid = cmd->uc_script_ctx.sc_sid;
   }
-  do_cmdline(buf, eap->ea_getline, eap->cookie,
-             DOCMD_VERBOSE|DOCMD_NOWAIT|DOCMD_KEYTYPED);
+  do_cmdline(buf, eap->ea_getline, eap->cookie, DOCMD_VERBOSE | DOCMD_NOWAIT | DOCMD_KEYTYPED);
 
   // Careful: Do not use "cmd" here, it may have become invalid if a user
   // command was added.
@@ -1798,15 +1782,20 @@ Dict commands_array(buf_T *buf, Arena *arena)
 
     switch (cmd->uc_argt & (EX_EXTRA | EX_NOSPC | EX_NEEDARG)) {
     case 0:
-      arg[0] = '0'; break;
+      arg[0] = '0';
+      break;
     case (EX_EXTRA):
-      arg[0] = '*'; break;
+      arg[0] = '*';
+      break;
     case (EX_EXTRA | EX_NOSPC):
-      arg[0] = '?'; break;
+      arg[0] = '?';
+      break;
     case (EX_EXTRA | EX_NEEDARG):
-      arg[0] = '+'; break;
+      arg[0] = '+';
+      break;
     case (EX_EXTRA | EX_NOSPC | EX_NEEDARG):
-      arg[0] = '1'; break;
+      arg[0] = '1';
+      break;
     }
     PUT_C(d, "nargs", CSTR_TO_ARENA_OBJ(arena, arg));
 
@@ -1816,15 +1805,14 @@ Dict commands_array(buf_T *buf, Arena *arena)
       char *cmd_compl = get_command_complete(cmd->uc_compl);
       PUT_C(d, "complete", (cmd_compl == NULL ? NIL : CSTR_AS_OBJ(cmd_compl)));
     }
-    PUT_C(d, "complete_arg", cmd->uc_compl_arg == NULL
-          ? NIL : CSTR_AS_OBJ(cmd->uc_compl_arg));
+    PUT_C(d, "complete_arg", cmd->uc_compl_arg == NULL ? NIL : CSTR_AS_OBJ(cmd->uc_compl_arg));
 
     Object obj = NIL;
     if (cmd->uc_argt & EX_COUNT) {
       if (cmd->uc_def >= 0) {
-        obj = STRING_OBJ(arena_printf(arena, "%" PRId64, cmd->uc_def));    // -count=N
+        obj = STRING_OBJ(arena_printf(arena, "%" PRId64, cmd->uc_def));  // -count=N
       } else {
-        obj = CSTR_AS_OBJ("0");    // -count
+        obj = CSTR_AS_OBJ("0");  // -count
       }
     }
     PUT_C(d, "count", obj);
@@ -1832,11 +1820,11 @@ Dict commands_array(buf_T *buf, Arena *arena)
     obj = NIL;
     if (cmd->uc_argt & EX_RANGE) {
       if (cmd->uc_argt & EX_DFLALL) {
-        obj = STATIC_CSTR_AS_OBJ("%");    // -range=%
+        obj = STATIC_CSTR_AS_OBJ("%");  // -range=%
       } else if (cmd->uc_def >= 0) {
-        obj = STRING_OBJ(arena_printf(arena, "%" PRId64, cmd->uc_def));    // -range=N
+        obj = STRING_OBJ(arena_printf(arena, "%" PRId64, cmd->uc_def));  // -range=N
       } else {
-        obj = STATIC_CSTR_AS_OBJ(".");    // -range
+        obj = STATIC_CSTR_AS_OBJ(".");  // -range
       }
     }
     PUT_C(d, "range", obj);

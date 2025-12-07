@@ -1992,7 +1992,7 @@ describe('API/win', function()
     it('no heap-use-after-free if target buffer deleted by autocommands', function()
       local cur_buf = api.nvim_get_current_buf()
       local new_buf = api.nvim_create_buf(true, true)
-      command('autocmd WinNew * ++once call nvim_buf_delete(' .. new_buf .. ', #{force: 1})')
+      command('autocmd WinNew * ++once call nvim_buf_del(' .. new_buf .. ', #{force: 1})')
       api.nvim_open_win(new_buf, true, { split = 'left' })
       eq(cur_buf, api.nvim_get_current_buf())
     end)
@@ -2047,7 +2047,7 @@ describe('API/win', function()
         new
         let g:buf = bufnr()
         autocmd BufWipeout * ++once ++nested let g:buf2 = nvim_create_buf(1, 0)
-              \| execute 'autocmd BufLeave * ++once call nvim_buf_delete(g:buf2, #{force: 1})'
+              \| execute 'autocmd BufLeave * ++once call nvim_buf_del(g:buf2, #{force: 1})'
               \| setlocal bufhidden=
               \| call nvim_open_win(g:buf2, 1, #{relative: 'editor', width: 5, height: 5, col: 5, row: 5})
         setlocal bufhidden=wipe
@@ -2255,7 +2255,7 @@ describe('API/win', function()
       ]])
       matches(
         'E5601: Cannot close window, only floating window would remain$',
-        pcall_err(command, 'call nvim_buf_delete(g:buf, #{force: 1})')
+        pcall_err(command, 'call nvim_buf_del(g:buf, #{force: 1})')
       )
       eq(true, eval 'nvim_tabpage_is_valid(g:tp)')
     end)

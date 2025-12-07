@@ -1064,7 +1064,7 @@ local function show_confirm_buf(lines, on_finish)
   local win_id = api.nvim_get_current_win()
 
   local delete_buffer = vim.schedule_wrap(function()
-    pcall(api.nvim_buf_delete, bufnr, { force = true })
+    pcall(api.nvim_buf_del, bufnr, { force = true })
     if api.nvim_tabpage_is_valid(tab_id) then
       vim.cmd.tabclose(api.nvim_tabpage_get_number(tab_id))
     end

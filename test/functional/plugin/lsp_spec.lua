@@ -602,9 +602,9 @@ describe('LSP', function()
         vim.api.nvim_set_current_buf(bufnr2)
         vim.lsp.start({ name = 'detach-dummy', cmd = server.cmd })
         assert(vim.tbl_count(client.attached_buffers) == 2)
-        vim.api.nvim_buf_delete(bufnr1, { force = true })
+        vim.api.nvim_buf_del(bufnr1, { force = true })
         assert(vim.tbl_count(client.attached_buffers) == 1)
-        vim.api.nvim_buf_delete(bufnr2, { force = true })
+        vim.api.nvim_buf_del(bufnr2, { force = true })
         assert(vim.tbl_count(client.attached_buffers) == 0)
         return detach_called1 and detach_called2
       end)
@@ -629,7 +629,7 @@ describe('LSP', function()
           name = 'detach-dummy',
           cmd = server.cmd,
           on_init = function()
-            vim.api.nvim_buf_delete(bufnr, {})
+            vim.api.nvim_buf_del(bufnr, {})
             on_init_called = true
           end,
         }))
@@ -641,7 +641,7 @@ describe('LSP', function()
       end)
     end)
 
-    it('should allow on_lines + nvim_buf_delete during LSP initialization #28575', function()
+    it('should allow on_lines + nvim_buf_del during LSP initialization #28575', function()
       exec_lua(create_server_definition)
       exec_lua(function()
         local initialized = false
@@ -662,7 +662,7 @@ describe('LSP', function()
           cmd = server.cmd,
         })
         vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { 'hello' })
-        vim.api.nvim_buf_delete(bufnr, {})
+        vim.api.nvim_buf_del(bufnr, {})
         local ok = vim.wait(1000, function()
           return initialized
         end)
@@ -5124,7 +5124,7 @@ describe('LSP', function()
           vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { 'Some contents' })
           vim.lsp.buf_attach_client(bufnr, _G.CLIENT_ID)
         end
-        vim.api.nvim_buf_delete(default_buf, { force = true })
+        vim.api.nvim_buf_del(default_buf, { force = true })
 
         _G.REQUEST_COUNT = vim.tbl_count(lens_title_per_fake_uri)
         _G.RESPONSES = {}

@@ -627,7 +627,7 @@ function M.rename(old_fname, new_fname, opts)
         return
       end
       -- no need to preserve if such a buffer is empty
-      api.nvim_buf_delete(existing_buf, {})
+      api.nvim_buf_del(existing_buf, {})
     end
 
     buf_rename[b] = { from = old_bname, to = new_bname }
@@ -653,7 +653,7 @@ function M.rename(old_fname, new_fname, opts)
     vim._with({ buf = b }, function()
       vim.cmd('keepalt saveas! ' .. vim.fn.fnameescape(rename.to))
     end)
-    -- Delete the new buffer with the old name created by :saveas. nvim_buf_delete and
+    -- Delete the new buffer with the old name created by :saveas. nvim_buf_del and
     -- :bwipeout are futile because the buffer will be added again somewhere else.
     vim.cmd('bdelete! ' .. vim.fn.bufnr(rename.from))
   end
@@ -683,7 +683,7 @@ local function delete_file(change)
     force = opts.ignoreIfNotExists,
     recursive = opts.recursive,
   })
-  api.nvim_buf_delete(bufnr, { force = true })
+  api.nvim_buf_del(bufnr, { force = true })
 end
 
 --- Applies a `WorkspaceEdit`.

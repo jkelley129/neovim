@@ -61,7 +61,7 @@ describe('TabClosed', function()
           au TabClosed * ++once let g:tp_valid = nvim_tabpage_is_valid(s:tp)
                              \| let g:abuf = expand('<abuf>')
 
-          call nvim_buf_delete(g:buf, #{force: 1})
+          call nvim_buf_del(g:buf, #{force: 1})
         ]])
         eq(false, eval('g:tp_valid'))
         eq(false, eval('nvim_buf_is_valid(g:buf)'))

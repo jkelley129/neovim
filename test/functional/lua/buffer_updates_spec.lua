@@ -1716,7 +1716,7 @@ describe('nvim_buf_attach on_detach', function()
       _G.events = {}
       local buf = vim.api.nvim_create_buf(false, true)
       vim.api.nvim_buf_attach(buf, false, { on_detach = _G.on_detach })
-      vim.api.nvim_buf_delete(buf, { force = true })
+      vim.api.nvim_buf_del(buf, { force = true })
     end)
 
     -- Was unlisted, so no BufDelete.
@@ -1770,7 +1770,7 @@ describe('nvim_buf_attach on_detach', function()
       vim.bo.modified = true
       _G.events = {}
       vim.api.nvim_buf_attach(0, false, { on_detach = _G.on_detach })
-      vim.api.nvim_buf_delete(0, { force = true })
+      vim.api.nvim_buf_del(0, { force = true })
     end)
 
     -- on_detach must still be first when wiping the last buffer if it's listed and non-reusable.
@@ -1810,7 +1810,7 @@ it('nvim_buf_attach from buf_freeall autocommands does not leak', function()
         _G.autocmd_fired = true
       end,
     })
-    vim.api.nvim_buf_delete(b, { force = true })
+    vim.api.nvim_buf_del(b, { force = true })
   end)
   eq(true, exec_lua('return _G.autocmd_fired'))
 end)

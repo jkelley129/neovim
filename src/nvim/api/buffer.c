@@ -1004,14 +1004,14 @@ Boolean nvim_buf_is_loaded(Buffer buffer)
 /// To get |:bdelete| behavior, reset 'buflisted' and pass `unload=true`:
 /// ```lua
 /// vim.bo.buflisted = false
-/// vim.api.nvim_buf_delete(0, { unload = true })
+/// vim.api.nvim_buf_del(0, { unload = true })
 /// ```
 ///
 /// @param buffer Buffer id, or 0 for current buffer
 /// @param opts  Optional parameters. Keys:
 ///          - force:  Force deletion, ignore unsaved changes.
 ///          - unload: Unloaded only (|:bunload|), do not delete.
-void nvim_buf_delete(Buffer buffer, Dict(buf_delete) *opts, Error *err)
+void nvim_buf_del(Buffer buffer, Dict(buf_delete) *opts, Error *err)
   FUNC_API_SINCE(7)
   FUNC_API_TEXTLOCK
 {

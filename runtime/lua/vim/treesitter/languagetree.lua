@@ -788,7 +788,7 @@ function LanguageTree:destroy()
   -- Cleanup here
   if self._has_scratch_buf then
     self._has_scratch_buf = false
-    vim.api.nvim_buf_delete(self._source, {})
+    vim.api.nvim_buf_del(self._source, {})
   end
   for _, child in pairs(self._children) do
     child:destroy()

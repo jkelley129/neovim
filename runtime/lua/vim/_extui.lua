@@ -74,7 +74,7 @@ function M.enable(opts)
     end
     for _, buf in pairs(ext.bufs) do
       if api.nvim_buf_is_valid(buf) then
-        api.nvim_buf_delete(buf, {})
+        api.nvim_buf_del(buf, {})
       end
     end
     api.nvim_clear_autocmds({ group = ext.augroup })

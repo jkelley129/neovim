@@ -869,7 +869,7 @@ describe('TUI', function()
       {5:-- INSERT --}                                      |
       {5:-- TERMINAL --}                                    |
     ]])
-    child_session:request('nvim_buf_delete', 0, { force = true })
+    child_session:request('nvim_buf_del', 0, { force = true })
     child_session:request('nvim_set_option_value', 'laststatus', 0, {})
     child_session:request(
       'nvim_call_function',
